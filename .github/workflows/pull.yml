@@ -12,15 +12,25 @@ jobs:
 
       - name: Get ETH/LDO/SUI prices from CoinGecko
         run: |
+          # UTC zaman damgası
           ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          # CoinGecko’dan fiyat verisini al
           response=$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=ethereum,ldo-dao,sui&vs_currencies=usd")
+
+          # latest.json dosyasını dinamik olarak oluştur
           jq -n --arg ts "$ts" \
-            --argjson prices "$response" \
-            '{timestamp:$ts, data:[
-                {symbol: "ETHUSDT", price: ( $prices.ethereum.usd|tostring )},
-                {symbol: "LDOUSDT", price: ( $prices["lido-dao"].usd|tostring )},
-                {symbol: "SUIUSDT", price: ( $prices.sui.usd|tostring )}
-            ] }' > latest.json
+            --arg price_eth "$(echo "$response" | jq -r .ethereum.usd)" \
+            --arg price_ldo "$(echo "$response" | jq -r '."lido-dao".usd')" \
+            --arg price_sui "$(echo "$response" | jq -r .sui.usd)" \
+            '{
+               timestamp: $ts,
+               data: [
+                 { symbol: "ETHUSDT", price: $price_eth },
+                 { symbol: "LDOUSDT", price: $price_ldo },
+                 { symbol: "SUIUSDT", price: $price_sui }
+               ]
+             }' > latest.json
 
       - name: Commit if changed
         run: |
