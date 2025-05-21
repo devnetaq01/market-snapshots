@@ -1,26 +1,26 @@
 name: pull-prices
 on:
   schedule:
-    - cron: '*/1 * * * *'   # her dakika
+    - cron: '*/1 * * * *'
+  workflow_dispatch:
+
 jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get ETH / LDO / SUI prices
+      - name: Get ETH/LDO/SUI prices from CoinGecko
         run: |
           ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-          curl -s "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT" > eth.json
-          curl -s "https://api.binance.com/api/v3/ticker/price?symbol=LDOUSDT" > ldo.json
-          curl -s "https://api.binance.com/api/v3/ticker/price?symbol=SUIUSDT" > sui.json
-
+          response=$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=ethereum,ldo-dao,sui&vs_currencies=usd")
           jq -n --arg ts "$ts" \
-             --slurpfile eth eth.json \
-             --slurpfile ldo ldo.json \
-             --slurpfile sui sui.json \
-             '{timestamp:$ts, data:[ $eth[0], $ldo[0], $sui[0] ] }' > latest.json
+            --argjson prices "$response" \
+            '{timestamp:$ts, data:[
+                {symbol: "ETHUSDT", price: ( $prices.ethereum.usd|tostring )},
+                {symbol: "LDOUSDT", price: ( $prices["lido-dao"].usd|tostring )},
+                {symbol: "SUIUSDT", price: ( $prices.sui.usd|tostring )}
+            ] }' > latest.json
 
       - name: Commit if changed
         run: |
