@@ -16,7 +16,7 @@ jobs:
           ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
           # CoinGecko’dan fiyat verisini al
-          response=$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=ethereum,ldo-dao,sui&vs_currencies=usd")
+          response=$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=ethereum,lido-dao,sui&vs_currencies=usd")
 
           # latest.json dosyasını dinamik olarak oluştur
           jq -n --arg ts "$ts" \
