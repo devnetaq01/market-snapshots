@@ -1,0 +1,31 @@
+name: pull-prices
+on:
+  schedule:
+    - cron: '*/1 * * * *'   # her dakika
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get ETH / LDO / SUI prices
+        run: |
+          ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          curl -s "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT" > eth.json
+          curl -s "https://api.binance.com/api/v3/ticker/price?symbol=LDOUSDT" > ldo.json
+          curl -s "https://api.binance.com/api/v3/ticker/price?symbol=SUIUSDT" > sui.json
+
+          jq -n --arg ts "$ts" \
+             --slurpfile eth eth.json \
+             --slurpfile ldo ldo.json \
+             --slurpfile sui sui.json \
+             '{timestamp:$ts, data:[ $eth[0], $ldo[0], $sui[0] ] }' > latest.json
+
+      - name: Commit if changed
+        run: |
+          git config user.email "bot@example.com"
+          git config user.name  "price-bot"
+          git add latest.json
+          git commit -m "auto: $(date -u)" || echo "no change"
+          git push
