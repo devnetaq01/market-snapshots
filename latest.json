@@ -1,9 +1,9 @@
 {
-  "timestamp": "2025-08-15T11:19:32Z",
+  "timestamp": "2025-08-15T11:34:17Z",
   "data": [
     {
       "symbol": "ETHUSDT",
-      "price": "4635.55"
+      "price": "4635.3"
     },
     {
       "symbol": "LDOUSDT",
@@ -11,7 +11,7 @@
     },
     {
       "symbol": "SUIUSDT",
-      "price": "3.82"
+      "price": "3.81"
     }
   ]
 }
