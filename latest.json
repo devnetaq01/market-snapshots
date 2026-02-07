@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-02-07T07:44:30Z",
+  "timestamp": "2026-02-07T08:00:23Z",
   "data": [
     {
       "symbol": "ETHUSDT",
-      "price": "2035.21"
+      "price": "2027.18"
     },
     {
       "symbol": "LDOUSDT",
-      "price": "0.352387"
+      "price": "0.351666"
     },
     {
       "symbol": "SUIUSDT",
-      "price": "0.974981"
+      "price": "0.973239"
     }
   ]
 }
